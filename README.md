@@ -131,3 +131,109 @@ flowchart TD
     D6 -- Similar a --> D7
     D7 -- Similar a --> D8
 ```
+
+## Lenguaje de programación
+
+**MagicLang**
+### Objetivo
+MagicLang es un lenguaje de programación esotérico de estilo imperativo cuyo objetivo principal es ofrecer una experiencia lúdica y temática inspirada en el vocabulario vinculado a la magia. Sus construcciones sintácticas, como hechizo, invocar, conjurar, ritual, encantar o forjar, remiten al imaginario de los rituales y encantamientos, haciendo que el código se interprete como un grimorio.
+
+### Alcance
+Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la definición de variables y el uso de estructuras de control, pero que se distingue por la incorporación de un vocabulario temático vinculado a la magia. De este modo, palabras clave como hechizo, invocar, ritual o conjurar constituyen construcciones sintácticas que acercar la programación a una experiencia narrativa, lúdica y creativa. MagicLang no está concebido para el desarrollo de software profesional ni para la optimización de rendimiento, ya que su propósito es principalmente conceptual y expresivo. Sus usuarios esperados son estudiantes, entusiastas de los lenguajes esotéricos y personas interesadas en explorar la programación desde una perspectiva distinta, más cercana al juego y la imaginación que a la producción industrial.
+
+### Aspectos Léxicos
+
+| Categoría               | ER                                   | Describe… |
+|--------------------------|--------------------------------------|-----------|
+| Palabras clave mágicas   | `(hechizo\|invocar\|conjurar\|ritual\|fallido\|encantar\|forjar)` | Reservadas del lenguaje, representan construcciones sintácticas mágicas. |
+| Identificadores          | `(a\|...\|z)(a\|...\|z\|A\|...\|Z\|0\|...\|9\|_\|-\|#\|$\|?)*`             | Nombres de variables, funciones o entidades mágicas. |
+| Literales numéricos      | `0\|...\|9`                        | Valores enteros o decimales. |
+| Literales booleanos      | `(Verdadero\|Falso)`              | Valores lógicos verdaderos o falsos. |
+| Literales de cadena      | `"()"`                            | Textos encerrados entre comillas dobles. |
+| Operadores aritméticos   | `(+\|-\|*\|/\|%)`                           | Suma, resta, multiplicación, división y módulo. |
+| Operadores relacionales  | `(==\|!=\|<=\|>=\|<\|>)`                  | Comparaciones entre valores. |
+| Operadores lógicos       | `(&& \| \|\| \| !)`                        | Conjunción, disyunción y negación. |
+| Símbolos de agrupación   | `(()\|{}\|[]]`                     | Paréntesis, llaves y corchetes. |
+| Delimitador de sentencia | `;`                                  | Marca el fin de una instrucción. |
+
+### Aspectos Sintácticos
+```HTML
+<programa> ::= { <lista_sentencias> }
+<lista_sentencias> ::= <sentencia> | <sentencia> <lista_sentencias>
+<sentencia> ::= λ | <asignacion>; | <funcion> | <invocacion>; | <repeticion> | <condicional> | <imprimir>;
+
+<asignacion> ::= forjar <identificador> = <valor>
+
+<identificador> ::= <minuscula> <caracteres>
+<caracteres> ::= λ | <caracter><caracteres>
+<caracter> ::= <minuscula> | <mayuscula> | <numero> | <simbolo>
+
+<funcion> ::= hechizo <identificador>(<vacio_o_parametros>) <bloque>
+
+<vacio_o_parametros> ::= λ | <parametros>
+<parametros> ::= <identificador> | <identificador>, <parametros>
+<bloque> ::= [<lista_sentencias>]
+
+<invocacion> ::= invocar <identificador>(<vacio_o_argumento>) | invocar <bloque>
+<vacio_o_argumento> ::= λ | <argumento>
+<argumento> ::= <valor> | <valor>, <argumento>
+
+<repeticion> ::= conjurar (<valor_numerico>) veces <bloque>
+
+<condicional> ::= ritual(<valor_booleano>) <bloque> | ritual(<valor_booleano>) <bloque> fallido <bloque>
+
+<imprimir> ::= encantar(<valor>)
+
+<valor> ::= <valor_numerico> | <valor_booleano>
+
+<valor_numerico> ::= <numero> | <operacion_numerica> | <identificador>
+<operacion_numerica> ::= <valor_numerico> <operador_numerico> <valor_numerico> | (<valor_numerico>)
+
+<valor_booleano> ::= <booleano> | <operacion_booleana> | <identificador>
+<operacion_booleana> ::= no <valor_booleano> | <valor_booleano> <operador_booleano> <valor_booleano> | <valor_numerico> <comparador_numerico> <valor_numerico> | (<valor_booleano>)
+
+<operador_numerico> ::= + | - | * | / | %
+<comparador_numerico> ::= <comparacion> | < | > | <= | >=
+<operador_booleano> ::= <comparacion> | y | o
+<comparacion> ::= == | !=
+<booleano> ::= Verdadero | Falso
+<numero> ::= <digito> | <digito><numero>
+<digito> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+<minuscula> ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | ñ | o | p | q | r | s | t | u | v | w | x | y | z
+<mayuscula> ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | Ñ | O | P | Q | R | S | T | U | V | W | X | Y | Z
+<simbolo> ::= _ | - | # | $ | ?
+```
+
+### Aspectos Semánticos
+**Binding**
+
+| Elemento | Atributo | Momento de ligadura / Binding |
+|----------|----------|-------------------------------|
+| Variable | Tipo | Dinámico: determinado al asignar un valor en tiempo de ejecución |
+| Variable | Almacenamiento | Dinámico: la memoria se asigna al ejecutar `forjar` |
+| Variable | Alcance | Estático: definido por el bloque donde se declara |
+| Variable | Nombre | Estático: definido en el momento de escritura del programa |
+| Función / Método | Acción asociada | Estático: asociada al declarar el `hechizo` |
+| Parámetro | Valor | Dinámico: ligado al pasar el argumento en la invocación |
+| Bloque | Variables locales | Estático: se determina al definir el bloque |
+| Sentencia | Operación | Dinámico: se evalúa en tiempo de ejecución |
+
+---
+**Palabras reservadas**
+
+| Palabra reservada | Elemento Relacionado | Atributos | Descripción |
+|------------------|--------------------|-----------|-------------|
+| forjar | Variable | Nombre, Valor, Tipo, Alcance | Asigna un valor a una posición de memoria y crea/modifica variables en el bloque actual. |
+| hechizo | Función / Método | Nombre, Parámetros, Tipo de retorno implícito, Cuerpo ejecutable | Define un bloque de código reutilizable con parámetros que realiza una acción específica. |
+| invocar | Sentencia / Función | Acción asociada, Parámetros | Ejecuta un bloque anónimo o un `hechizo` previamente declarado, pasando valores a sus parámetros. |
+| conjurar | Sentencia / Bloque | Condición, Repeticiones | Ejecuta un bloque de instrucciones un número determinado de veces (similar a un bucle for). |
+| ritual | Sentencia / Bloque condicional | Condición, Bloque verdadero, Bloque fallido | Ejecuta un bloque si la condición es verdadera, o el bloque alternativo si es falsa (equivalente a if-else). |
+| fallido | Sentencia / Bloque condicional | Bloque alternativo | Bloque que se ejecuta cuando la condición de un `ritual` es falsa. |
+| encantar | Sentencia | Valor | Muestra en la salida el valor de una variable o expresión. |
+
+---
+**Tipos de Datos y Sistema de Tipos**
+
+- Tipos del lenguaje: enteros, booleanos y cadenas de texto.
+- Tipado: dinámico, ya que el tipo de una variable se determina en la asignación y puede variar según el valor.
+- Sistema de tipos: débil, ya que no establece operaciones entre tipos.
