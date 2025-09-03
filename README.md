@@ -149,7 +149,6 @@ Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la defi
 | Identificadores          | `(a\|...\|z)(a\|...\|z\|A\|...\|Z\|0\|...\|9\|_\|-\|#\|$\|?)*`             | Nombres de variables, funciones o entidades mágicas. |
 | Literales numéricos      | `0\|...\|9`                        | Valores enteros o decimales. |
 | Literales booleanos      | `(Verdadero\|Falso)`              | Valores lógicos verdaderos o falsos. |
-| Literales de cadena      | `"()"`                            | Textos encerrados entre comillas dobles. |
 | Operadores aritméticos   | `(+\|-\|*\|/\|%)`                           | Suma, resta, multiplicación, división y módulo. |
 | Operadores relacionales  | `(==\|!=\|<=\|>=\|<\|>)`                  | Comparaciones entre valores. |
 | Operadores lógicos       | `(&& \| \|\| \| !)`                        | Conjunción, disyunción y negación. |
@@ -237,3 +236,20 @@ Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la defi
 - Tipos del lenguaje: enteros, booleanos y cadenas de texto.
 - Tipado: dinámico, ya que el tipo de una variable se determina en la asignación y puede variar según el valor.
 - Sistema de tipos: débil, ya que no establece operaciones entre tipos.
+
+## Scanner
+
+Para el scanner utilizaré la dependencia **ply.lex**, por lo que utilizaré el lenguaje **Python**.
+
+### Tabla con expresiones regulares adaptadas para los analizadores léxicos
+| Categoría               | Expresión |
+|--------------------------|-----------|
+| Palabras clave mágicas   | `\b(hechizo\|invocar\|conjurar\|ritual\|fallido\|encantar\|forjar)\b` |
+| Identificadores          | `[a-z][a-zA-Z0-9_\-#$?]*` |
+| Literales numéricos      | `\d+` |
+| Literales booleanos      | `(Verdadero\|Falso)` |
+| Operadores aritméticos   | `(\+\|\-\|\*\|/\|%)` |
+| Operadores relacionales  | `(==\|!=\|<=\|>=\|<\|>)` |
+| Operadores lógicos       | `(&&\| \|\| \| !)` |
+| Símbolos de agrupación   | `[()\[\]{}]` |
+| Delimitador de sentencia | `;` |
