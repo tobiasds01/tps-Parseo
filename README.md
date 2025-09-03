@@ -152,7 +152,7 @@ Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la defi
 | Operadores aritméticos   | `(+\|-\|*\|/\|%)`                           | Suma, resta, multiplicación, división y módulo. |
 | Operadores relacionales  | `(==\|!=\|<=\|>=\|<\|>)`                  | Comparaciones entre valores. |
 | Operadores lógicos       | `(&& \| \|\| \| !)`                        | Conjunción, disyunción y negación. |
-| Símbolos de agrupación   | `(()\|{}\|[]]`                     | Paréntesis, llaves y corchetes. |
+| Símbolos de agrupación   | `(()\|{}\|[])`                     | Paréntesis, llaves y corchetes. |
 | Delimitador de sentencia | `;`                                  | Marca el fin de una instrucción. |
 
 ### Aspectos Sintácticos
@@ -233,7 +233,7 @@ Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la defi
 ---
 **Tipos de Datos y Sistema de Tipos**
 
-- Tipos del lenguaje: enteros, booleanos y cadenas de texto.
+- Tipos del lenguaje: enteros y booleanos.
 - Tipado: dinámico, ya que el tipo de una variable se determina en la asignación y puede variar según el valor.
 - Sistema de tipos: débil, ya que no establece operaciones entre tipos.
 
