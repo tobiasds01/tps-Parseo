@@ -157,21 +157,19 @@ Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la defi
 
 ### Aspectos Sintácticos
 ```HTML
-<programa> ::= { <lista_sentencias> }
-<lista_sentencias> ::= <sentencia> | <sentencia> <lista_sentencias>
-<sentencia> ::= λ | <asignacion>; | <funcion> | <invocacion>; | <repeticion> | <condicional> | <imprimir>;
+<programa> ::= { <sentencia>* }
+<sentencia> ::= <asignacion>; | <funcion> | <invocacion>; | <repeticion> | <condicional> | <imprimir>;
 
 <asignacion> ::= forjar <identificador> = <valor>
 
-<identificador> ::= <minuscula> <caracteres>
-<caracteres> ::= λ | <caracter><caracteres>
+<identificador> ::= <minuscula> <caracteres>*
 <caracter> ::= <minuscula> | <mayuscula> | <numero> | <simbolo>
 
 <funcion> ::= hechizo <identificador>(<vacio_o_parametros>) <bloque>
 
 <vacio_o_parametros> ::= λ | <parametros>
 <parametros> ::= <identificador> | <identificador>, <parametros>
-<bloque> ::= [<lista_sentencias>]
+<bloque> ::= [ <sentencia>* ]
 
 <invocacion> ::= invocar <identificador>(<vacio_o_argumento>) | invocar <bloque>
 <vacio_o_argumento> ::= λ | <argumento>
@@ -253,3 +251,73 @@ Para el scanner utilizaré la dependencia **ply.lex**, por lo que utilizaré el 
 | Operadores lógicos       | `(&&\| \|\| \| !)` |
 | Símbolos de agrupación   | `[()\[\]{}]` |
 | Delimitador de sentencia | `;` |
+
+## Análisis sintáctico
+
+### Descendente
+
+```ruby
+{
+  forjar x = 8;
+
+  encantar(x);
+}
+```
+| Cadena a derivar | Producción utilizada |
+|------------------|----------------------|
+| `<programa>` | `<programa> ::= { <sentencia>* }` |
+| `{ <sentencia>* }` | `<sentencia>* ::= { <sentencia> <sentencia> }` |
+| `{ <sentencia> <sentencia> }` | `<sentencia> ::= <asignacion>;` |
+| `{ <asignacion>; <sentencia> }` | `<asignacion> ::= forjar <identificador> = <valor>` |
+| `{ forjar <identificador> = <valor>; <sentencia> }` | `<identificador> ::= <minuscula><caracter>*` |
+| `{ forjar <minuscula><caracter>* = <valor>; <sentencia> }` | `<minuscula> ::= x` |
+| `{ forjar x<caracter>* = <valor>; <sentencia> }` | `<caracter>* ::= λ` |
+| `{ forjar x = <valor>; <sentencia> }` | `<valor> ::= <valor_numerico>` |
+| `{ forjar x = <valor_numerico>; <sentencia> }` | `<valor_numerico> ::= <numero>` |
+| `{ forjar x = <numero>; <sentencia> }` | `<numero> ::= <digito>` |
+| `{ forjar x = <digito>; <sentencia> }` | `<digito> ::= 8` |
+| `{ forjar x = 8; <sentencia> }` | `<sentencia> ::= <imprimir>;` |
+| `{ forjar x = 8; <imprimir>; }` | `<imprimir> ::= encantar(<valor>)` |
+| `{ forjar x = 8; encantar(<valor>); }` | `<valor> ::= <valor_numerico>` |
+| `{ forjar x = 8; encantar(<valor_numerico>); }` | `<valor> ::= <valor_numerico>` |
+| `{ forjar x = 8; encantar(<valor_numerico>); }` | `<valor_numerico> ::= <numero>` |
+| `{ forjar x = 8; encantar(<numero>); }` | `<numero> ::= <identificador>` |
+| `{ forjar x = 8; encantar(<identificador>); }` | `<identificador> ::= <minuscula><caracter>*` |
+| `{ forjar x = 8; encantar(<minuscula><caracter>*); }` | `<minuscula> ::= x` |
+| `{ forjar x = 8; encantar(x<caracter>*); }` | `<caracter>* ::= λ` |
+| `{ forjar x = 8; encantar(x); }` | accept |
+
+
+### Ascendente
+
+```ruby
+{
+  forjar x = 8;
+
+  encantar(x);
+}
+```
+| Cadena a derivar | Producción utilizada |
+|------------------|----------------------|
+| `{ forjar x = 8; encantar(x); }`                           | `<caracter>* ::= λ`                                 |
+| `{ forjar x = 8; encantar(x<caracter>*); }`                | `<minuscula> ::= x`                                 |
+| `{ forjar x = 8; encantar(<minuscula><caracter>*); }`      | `<identificador> ::= <minuscula><caracter>*`        |
+| `{ forjar x = 8; encantar(<identificador>); }`             | `<numero> ::= <identificador>`                      |
+| `{ forjar x = 8; encantar(<numero>); }`                    | `<valor_numerico> ::= <numero>`                     |
+| `{ forjar x = 8; encantar(<valor_numerico>); }`            | `<valor> ::= <valor_numerico>`                      |
+| `{ forjar x = 8; encantar(<valor_numerico>); }`            | `<valor> ::= <valor_numerico>`                      |
+| `{ forjar x = 8; encantar(<valor>); }`                     | `<imprimir> ::= encantar(<valor>)`                  |
+| `{ forjar x = 8; <imprimir>; }`                            | `<sentencia> ::= <imprimir>;`                       |
+| `{ forjar x = 8; <sentencia> }`                            | `<digito> ::= 8`                                    |
+| `{ forjar x = <digito>; <sentencia> }`                     | `<numero> ::= <digito>`                             |
+| `{ forjar x = <numero>; <sentencia> }`                     | `<valor_numerico> ::= <numero>`                     |
+| `{ forjar x = <valor_numerico>; <sentencia> }`             | `<valor> ::= <valor_numerico>`                      |
+| `{ forjar x = <valor>; <sentencia> }`                      | `<caracter>* ::= λ`                                 |
+| `{ forjar x<caracter>* = <valor>; <sentencia> }`           | `<minuscula> ::= x`                                 |
+| `{ forjar <minuscula><caracter>* = <valor>; <sentencia> }` | `<identificador> ::= <minuscula><caracter>*`        |
+| `{ forjar <identificador> = <valor>; <sentencia> }`        | `<asignacion> ::= forjar <identificador> = <valor>` |
+| `{ <asignacion>; <sentencia> }`                            | `<sentencia> ::= <asignacion>;`                     |
+| `{ <sentencia> <sentencia> }`                              | `<sentencia>* ::= { <sentencia> <sentencia> }`      |
+| `{ <sentencia>* }`                                         | `<programa> ::= { <sentencia>* }`                   |
+| `<programa>`                                               | accept                                              |
+
