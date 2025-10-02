@@ -321,3 +321,88 @@ Para el scanner utilizaré la dependencia **ply.lex**, por lo que utilizaré el 
 | `{ <sentencia>* }`                                         | `<programa> ::= { <sentencia>* }`                   |
 | `<programa>`                                               | accept                                              |
 
+-------------
+## Diagrama de Transiciones
+### Diagrama generado
+
+![Diagrama de transiciones](Diagrama-de-Transiciones.png)
+
+### Tabla de transiciones
+
+| Q | a | b | Token | Retroceso |
+|---|---|---|-------|-----------|
+| >q0 | q1 | q0 | - | - |
+| q1 | q1 | q2 | - | - |
+| q2 | q1 | q3 | - | - |
+| *q3 | q1 | q0 | accept | 0 |
+
+### Programa en Python
+
+```python
+class Lexer:
+
+    def __init__(self):
+        pass
+
+    def verificar(self, palabra):
+        if self.__q0(palabra) == 1:
+            print("Palabra '" + palabra + "' aceptada.")
+        else:
+            print("Palabra '" + palabra + "' rechazada.")
+    
+    def __q0(self, palabra):
+        if (len(palabra) > 0):
+            if palabra[0] == 'a':
+                return self.__q1(palabra[1:])
+            elif palabra[0] == 'b':
+                return self.__q0(palabra[1:])
+        return 0
+
+    def __q1(self, palabra):
+        if (len(palabra) > 0):
+            if palabra[0] == 'a':
+                return self.__q1(palabra[1:])
+            elif palabra[0] == 'b':
+                return self.__q2(palabra[1:])
+        return 0
+    
+    def __q2(self, palabra):
+        if (len(palabra) > 0):
+            if palabra[0] == 'a':
+                return self.__q1(palabra[1:])
+            elif palabra[0] == 'b':
+                return self.__q3(palabra[1:])
+        return 0
+    
+    def __q3(self, palabra):
+        if (len(palabra) == 0):
+            return 1
+        else:
+            if palabra[0] == 'a':
+                return self.__q1(palabra[1:])
+            elif palabra[0] == 'b':
+                return self.__q0(palabra[1:])
+        return 0
+```
+
+**Algunas pruebas**
+
+Ejecución
+```
+Lexer().verificar("abb")
+Lexer().verificar("abbabaaababb")
+Lexer().verificar("aaaabb")
+Lexer().verificar("ab")
+Lexer().verificar("abbabbb")
+Lexer().verificar("abbaab")
+```
+
+Salida:
+```
+Palabra 'abb' aceptada.
+Palabra 'abbabaaababb' aceptada.
+Palabra 'aaaabb' aceptada.
+Palabra 'ab' rechazada.
+Palabra 'abbabbb' rechazada.
+Palabra 'abbaab' rechazada.
+```
