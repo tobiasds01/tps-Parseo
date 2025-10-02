@@ -151,7 +151,7 @@ Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la defi
 | Literales booleanos      | `(Verdadero\|Falso)`              | Valores lógicos verdaderos o falsos. |
 | Operadores aritméticos   | `(+\|-\|*\|/\|%)`                           | Suma, resta, multiplicación, división y módulo. |
 | Operadores relacionales  | `(==\|!=\|<=\|>=\|<\|>)`                  | Comparaciones entre valores. |
-| Operadores lógicos       | `(&& \| \|\| \| !)`                        | Conjunción, disyunción y negación. |
+| Operadores lógicos       | `(y \| o \| no)`                        | Conjunción, disyunción y negación. |
 | Símbolos de agrupación   | `(()\|{}\|[])`                     | Paréntesis, llaves y corchetes. |
 | Delimitador de sentencia | `;`                                  | Marca el fin de una instrucción. |
 
@@ -248,7 +248,7 @@ Para el scanner utilizaré la dependencia **ply.lex**, por lo que utilizaré el 
 | Literales booleanos      | `(Verdadero\|Falso)` |
 | Operadores aritméticos   | `(\+\|\-\|\*\|/\|%)` |
 | Operadores relacionales  | `(==\|!=\|<=\|>=\|<\|>)` |
-| Operadores lógicos       | `(&&\| \|\| \| !)` |
+| Operadores lógicos       | `( y \| o \| no)` |
 | Símbolos de agrupación   | `[()\[\]{}]` |
 | Delimitador de sentencia | `;` |
 
@@ -382,7 +382,6 @@ class Lexer:
                 return self.__q1(palabra[1:])
             elif palabra[0] == 'b':
                 return self.__q0(palabra[1:])
-        return 0
 ```
 
 **Algunas pruebas**

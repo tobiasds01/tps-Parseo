@@ -41,7 +41,6 @@ class Lexer:
                 return self.__q1(palabra[1:])
             elif palabra[0] == 'b':
                 return self.__q0(palabra[1:])
-        return 0
     
 Lexer().verificar("abb")
 Lexer().verificar("abbabaaababb")
