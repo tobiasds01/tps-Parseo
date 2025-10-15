@@ -252,7 +252,7 @@ Para el scanner utilizaré la dependencia **ply.lex**, por lo que utilizaré el 
 | Símbolos de agrupación   | `[()\[\]{}]` |
 | Delimitador de sentencia | `;` |
 
-## Análisis sintáctico
+## TP 3: Análisis sintáctico
 
 ### Descendente
 
@@ -405,3 +405,112 @@ Palabra 'ab' rechazada.
 Palabra 'abbabbb' rechazada.
 Palabra 'abbaab' rechazada.
 ```
+
+## TP 4: ASD con retroceso
+
+**Autómata de pila para el ejercicio:**
+Este es una versión reducida de la BNF original.
+
+![Autómata de pila](./Automata-pila-ASD.png)
+
+**Cadena a derivar:**
+```ruby
+{
+  forjar x = 8;
+}
+```
+| Pila                                  | Entrada               | Transición                                                            |
+|---------------------------------------|-----------------------|-----------------------------------------------------------------------|
+| λ                                     | `{ forjar x = 8; }`   | δ(q0, λ, λ) = (q1, #)                                                 |
+| #                                     | `{ forjar x = 8; }`   | δ(q1, λ, λ) = (q2, \<programa>)                                       |
+| #\<programa>                          | `{ forjar x = 8; }`   | δ(q2, λ, \<programa>) = (q2, { \<sentencia> })                        |
+| #\}\<sentencia>\{                     | `{ forjar x = 8; }`   | δ(q2, \{, \{) = (q2, λ)                                               |
+| #\}\<sentencia>                       | `forjar x = 8; }`     | δ(q2, λ, \<sentencia>) = (q2, \<asignacion>;)                         |
+| #\};\<asignacion>                     | `forjar x = 8; }`     | δ(q2, λ, \<asignacion>) = (q2, forjar \<identificador> = \<valor>)    |
+| #\};\<valor>=\<identificador>forjar   | `forjar x = 8; }`     | δ(q2, forjar, forjar) = (q2, λ)                                       |
+| #\};\<valor>=\<identificador>         | `x = 8; }`            | δ(q2, λ, \<identificador>) = (q2, \<minuscula>\<caracter>)            |
+| #\};\<valor>=\<caracter>\<minuscula>  | `x = 8; }`            | δ(q2, λ, \<minuscula>) = (q2, x)                                      |
+| #\};\<valor>=\<caracter>x             | `x = 8; }`            | δ(q2, x, x) = (q2, λ)                                                 |
+| #\};\<valor>=\<caracter>              | `= 8; }`              | δ(q2, λ, \<caracter>) = (q2, λ)                                       |
+| #\};\<valor>=                         | `= 8; }`              | δ(q2, =, =) = (q2, λ)                                                 |
+| #\};\<valor>                          | `8; }`                | δ(q2, λ, \<valor>) = (q2, \<valor_numerico>)                          |
+| #\};\<valor_numerico>                 | `8; }`                | δ(q2, λ, \<valor_numerico>) = (q2, \<numero>)                         |
+| #\};\<numero>                         | `8; }`                | δ(q2, λ, \<numero>) = (q2, 8)                                         |
+| #\};8                                 | `8; }`                | δ(q2, 8, 8) = (q2, λ)                                                 |
+| #\};                                  | `; }`                 | δ(q2, ;, ;) = (q2, λ)                                                 |
+| #\}                                   | `}`                   | δ(q2, }, }) = (q2, λ)                                                 |
+| #                                     | `λ`                   | δ(q2, λ, #) = (q3, λ)                                                 |
+| λ                                     | `λ`                   | accept                                                                |
+
+
+## TP 5: ASD con retroceso
+
+**GIC DE BASE:** se simplificó la BNF para lograr una GIC más accesible para el análisis de la sentencia.
+
+<pre style="font-family: 'Fira Code', monospace; background:#1e1e1e; color:#dcdcdc; padding:12px; border-radius:8px;">
+&lt;programa&gt;        → { &lt;sentencia&gt; }
+&lt;sentencia&gt;       → &lt;asignacion&gt;;
+&lt;asignacion&gt;      → forjar &lt;identificador&gt; = &lt;valor&gt;;
+&lt;identificador&gt;   → &lt;minuscula&gt; &lt;caracter&gt;
+&lt;minuscula&gt;       → x
+&lt;caracter&gt;        → λ
+&lt;valor&gt;           → &lt;valor_numerico&gt;
+&lt;valor_numerico&gt;  → &lt;numero&gt;
+&lt;numero&gt;          → 8
+</pre>
+
+
+**Cadena a derivar:**
+```ruby
+{
+  forjar x = 8;
+}
+```
+| PRIMERO |
+|---------------------------------------|
+| PRIM(\<programa>) = { { } |
+| PRIM(\<sentencia>) = { forjar } |
+| PRIM(\<asignacion>) = { forjar } |
+| PRIM(\<identificador>) = { x } |
+| PRIM(\<minuscula>) = { x } |
+| PRIM(\<caracter>) = { λ } |
+| PRIM(\<valor>) = { 8 } |
+| PRIM(\<valor_numerico>) = { 8 } |
+| PRIM(\<numero>) = { 8 } |
+
+| SIGUIENTE |
+|---------------------------------------|
+| SIG(\<programa>) = { $ } |
+| SIG(\<sentencia>) = { } } |
+| SIG(\<asignacion>) = { ; } |
+| SIG(\<identificador>) = { = } |
+| SIG(\<minuscula>) = { = } | 
+| SIG(\<caracter>) = { = } |
+| SIG(\<valor>) = { ; } |
+| SIG(\<valor_numerico>) = { ; } |
+| SIG(\<numero>) = { ; } |
+
+| PREDICCIÓN |
+|---------------------------------------|
+| PRED(\<programa> &rarr; { \<sentencia> }) = { { } ∩ { } = { }  |
+| PRED(\<sentencia> &rarr; \<asignacion>;) = { forjar } ∩ { } = { } |
+| PRED(\<asignacion> &rarr; forjar \<identificador> = \<valor>;) = { forjar } ∩ { } = { } |
+| PRED(\<identificador> &rarr; \<minuscula> \<caracter>) = { x } ∩ { } = { } |
+| PRED(\<minuscula> &rarr; x) = { x } ∩ { } = { } |
+| PRED(\<caracter> &rarr; λ) = { = } ∩ { } = { } |
+| PRED(\<valor> &rarr; \<valor_numerico>) = { 8 } ∩ { } = { } |
+| PRED(\<valor_numerico> &rarr; \<numero>) = { 8 } ∩ { } = { } |
+| PRED(\<numero> &rarr; 8) = { 8 } ∩ { } = { } |
+
+**Es LL(1)**
+
+<!--
+AUXILIARES
+
+SIG(<minuscula>) = { PRIM(<caracter>) = λ } => SIG(<minuscula>) = { SIG(<identificador>) = '=' }
+SIG(<caracter>) = { SIG(<identificador>) = '=' }
+SIG(<valor_numerico>) = { SIG(<valor>) = ; }
+SIG(<numero>) = { SIG(<valor_numerico>) = ; }
+
+PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } |
+-->
