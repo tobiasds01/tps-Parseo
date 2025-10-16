@@ -411,7 +411,21 @@ Palabra 'abbaab' rechazada.
 **Autómata de pila para el ejercicio:**
 Este es una versión reducida de la BNF original.
 
-![Autómata de pila](./Automata-pila-ASD.png)
+**GIC DE BASE:** se simplificó la BNF para lograr una GIC más accesible para el análisis de la sentencia.
+
+<pre style="font-family: 'Fira Code', monospace; background:#1e1e1e; color:#dcdcdc; padding:12px; border-radius:8px;">
+&lt;programa&gt;        → { &lt;sentencia&gt; }
+&lt;sentencia&gt;       → &lt;asignacion&gt;;
+&lt;asignacion&gt;      → forjar &lt;identificador&gt; = &lt;valor&gt;
+&lt;identificador&gt;   → &lt;minuscula&gt; &lt;caracter&gt;
+&lt;minuscula&gt;       → x
+&lt;caracter&gt;        → λ
+&lt;valor&gt;           → &lt;valor_numerico&gt;
+&lt;valor_numerico&gt;  → &lt;numero&gt;
+&lt;numero&gt;          → 8
+</pre>
+
+![Autómata ASD](./Automata-pila-ASD.png)
 
 **Cadena a derivar:**
 ```ruby
@@ -450,7 +464,7 @@ Este es una versión reducida de la BNF original.
 <pre style="font-family: 'Fira Code', monospace; background:#1e1e1e; color:#dcdcdc; padding:12px; border-radius:8px;">
 &lt;programa&gt;        → { &lt;sentencia&gt; }
 &lt;sentencia&gt;       → &lt;asignacion&gt;;
-&lt;asignacion&gt;      → forjar &lt;identificador&gt; = &lt;valor&gt;;
+&lt;asignacion&gt;      → forjar &lt;identificador&gt; = &lt;valor&gt;
 &lt;identificador&gt;   → &lt;minuscula&gt; &lt;caracter&gt;
 &lt;minuscula&gt;       → x
 &lt;caracter&gt;        → λ
@@ -514,3 +528,52 @@ SIG(<numero>) = { SIG(<valor_numerico>) = ; }
 
 PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } |
 -->
+
+
+## TP 6: ASA con retroceso
+
+**GIC DE BASE:** se simplificó la BNF para lograr una GIC más accesible para el análisis de la sentencia.
+
+<pre style="font-family: 'Fira Code', monospace; background:#1e1e1e; color:#dcdcdc; padding:12px; border-radius:8px;">
+&lt;programa&gt;        → { &lt;sentencia&gt; }
+&lt;sentencia&gt;       → &lt;asignacion&gt;;
+&lt;asignacion&gt;      → forjar &lt;identificador&gt; = &lt;valor&gt;
+&lt;identificador&gt;   → &lt;minuscula&gt; &lt;caracter&gt;
+&lt;minuscula&gt;       → x
+&lt;caracter&gt;        → λ
+&lt;valor&gt;           → &lt;valor_numerico&gt;
+&lt;valor_numerico&gt;  → &lt;numero&gt;
+&lt;numero&gt;          → 8
+</pre>
+
+![Autómata ASA](./Automata-ASA.png)
+
+**Cadena a derivar:**
+```ruby
+{
+  forjar x = 8;
+}
+```
+
+| Pila                                  | Entrada               | Transición                                                            |
+|---------------------------------------|-----------------------|-----------------------------------------------------------------------|
+| λ                                     | `{ forjar x = 8; }`   | δ(q0, λ, λ) = (q1, #)                                                 |
+| #                                     | `{ forjar x = 8; }`   | shift                                                                 |
+| #{                                    | `forjar x = 8; }`     | shift                                                                 |
+| #{forjar                              | `x = 8; }`            | shift                                                                 |
+| #{forjarx                             | `= 8; }`              | reduce                                                                |
+| #{forjar\<minuscula>                  | `= 8; }`              | reduce                                                                |
+| #{forjar\<minuscula>\<caracter>       | `= 8; }`              | reduce                                                                |
+| #{forjar\<identificador>              | `= 8; }`              | shift                                                                 |
+| #{forjar\<identificador>=             | `8; }`                | shift                                                                 |
+| #{forjar\<identificador>=8            | `; }`                 | reduce                                                                |
+| #{forjar\<identificador>=\<numero>    | `; }`                 | reduce                                                                |
+| #{forjar\<identificador>=\<valor_numerico> | `; }`            | reduce                                                                |
+| #{forjar\<identificador>=\<valor>     | `; }`                 | reduce                                                                |
+| #{\<asignacion>                       | `; }`                 | shift                                                                 |
+| #{\<asignacion>;                      | `}`                   | reduce                                                                |
+| #{\<sentencia>                        | `}`                   | shift                                                                 |
+| #{\<sentencia>}                       | `λ`                   | reduce                                                                |
+| #\<programa>                          | `λ`                   | δ(q1, λ, \<programa>) = (q2, λ)                                       |
+| #                                     | `λ`                   | δ(q2, λ, #) = (q3, λ)                                                 |
+| λ                                     | `λ`                   | accept                                                                |
