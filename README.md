@@ -514,3 +514,59 @@ SIG(<numero>) = { SIG(<valor_numerico>) = ; }
 
 PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } |
 -->
+
+---
+## TP 6: Tabla de Tipos y Tabla Semántica
+
+### Tabla de Tipos
+**Cadena a derivar:**
+```ruby
+1: {
+2:   forjar x = 8;
+3:   encantar(x);
+4: }
+```
+1. Tipos básicos del lenguaje
+
+| Cod | Nombre | TipoBase | Padre | Dimensión | Mínimo | Máximo | Ámbito |
+|:---:|:------:|:--------:|:-----:|:---------:|:------:|:------:|:------:|
+|  0  | valor  |    -1    |  -1   |     1     |   -1   |   -1   |    0   |
+|  1  | numero |    -1    |  -1   |     1     |   -1   |   -1   |    0   |
+|  2  | booleano |  -1    |  -1   |     1     |   -1   |   -1   |    0   |
+|  3  | vacío  |    -1    |  -1   |     1     |   -1   |   -1   |    0   |
+
+<br>
+<br>
+
+2. En este caso, el lenguaje no permite generar nuevos tipos o registros, por lo que la tabla de tipos no se actualizará.
+
+### Tabla de Símbolos
+**Cadena a derivar:**
+```ruby
+1: {
+2:   forjar x = 8;
+3:   encantar(x);
+4: }
+```
+1. Tipos básicos del lenguaje
+
+| Cod | Nombre | Categoría | Tipo | NumPar | ListaPar | Ámbito |
+|:---:|:------:|:---------:|:----:|:------:|:--------:|:------:|
+
+<br>
+<br>
+
+2. Se procesa la línea 1.
+
+| Cod | Nombre | Categoría | Tipo | NumPar | ListaPar | Ámbito |
+|:---:|:------:|:---------:|:----:|:------:|:--------:|:------:|
+|  0  |   x    | variable  |  1   |   -1   |   null   |    0   |
+
+<br>
+<br>
+
+3. Se procesa la línea 3 y 4. El contenido de la tabla no cambia.
+
+| Cod | Nombre | Categoría | Tipo | NumPar | ListaPar | Ámbito |
+|:---:|:------:|:---------:|:----:|:------:|:--------:|:------:|
+|  0  |   x    | variable  |  1   |   -1   |   null   |    0   |
