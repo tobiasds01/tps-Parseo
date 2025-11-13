@@ -162,7 +162,7 @@ Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la defi
 
 <asignacion> ::= forjar <identificador> = <valor>
 
-<identificador> ::= <minuscula> <caracteres>*
+<identificador> ::= <minuscula> <caracter>*
 <caracter> ::= <minuscula> | <mayuscula> | <numero> | <simbolo>
 
 <funcion> ::= hechizo <identificador>(<vacio_o_parametros>) <bloque>
@@ -171,22 +171,22 @@ Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la defi
 <parametros> ::= <identificador> | <identificador>, <parametros>
 <bloque> ::= [ <sentencia>* ]
 
-<invocacion> ::= invocar <identificador>(<vacio_o_argumento>) | invocar <bloque>
+<invocacion> ::= invocar <identificador>(<vacio_o_argumento>)
 <vacio_o_argumento> ::= λ | <argumento>
 <argumento> ::= <valor> | <valor>, <argumento>
 
-<repeticion> ::= conjurar (<valor_numerico>) veces <bloque>
+<repeticion> ::= conjurar (<valor>) veces <bloque>
 
-<condicional> ::= ritual(<valor_booleano>) <bloque> | ritual(<valor_booleano>) <bloque> fallido <bloque>
+<condicional> ::= ritual(<valor>) <bloque> | ritual(<valor>) <bloque> fallido <bloque>
 
 <imprimir> ::= encantar(<valor>)
 
-<valor> ::= <valor_numerico> | <valor_booleano>
+<valor> ::= <valor_numerico> | <valor_booleano> | <identificador>
 
-<valor_numerico> ::= <numero> | <operacion_numerica> | <identificador>
+<valor_numerico> ::= <numero> | <operacion_numerica>
 <operacion_numerica> ::= <valor_numerico> <operador_numerico> <valor_numerico> | (<valor_numerico>)
 
-<valor_booleano> ::= <booleano> | <operacion_booleana> | <identificador>
+<valor_booleano> ::= <booleano> | <operacion_booleana>
 <operacion_booleana> ::= no <valor_booleano> | <valor_booleano> <operador_booleano> <valor_booleano> | <valor_numerico> <comparador_numerico> <valor_numerico> | (<valor_booleano>)
 
 <operador_numerico> ::= + | - | * | / | %
@@ -222,8 +222,8 @@ Se trata de un lenguaje de estilo imperativo secuencial, el cual permite la defi
 |------------------|--------------------|-----------|-------------|
 | forjar | Variable | Nombre, Valor, Tipo, Alcance | Asigna un valor a una posición de memoria y crea/modifica variables en el bloque actual. |
 | hechizo | Función / Método | Nombre, Parámetros, Tipo de retorno implícito, Cuerpo ejecutable | Define un bloque de código reutilizable con parámetros que realiza una acción específica. |
-| invocar | Sentencia / Función | Acción asociada, Parámetros | Ejecuta un bloque anónimo o un `hechizo` previamente declarado, pasando valores a sus parámetros. |
-| conjurar | Sentencia / Bloque | Condición, Repeticiones | Ejecuta un bloque de instrucciones un número determinado de veces (similar a un bucle for). |
+| invocar | Sentencia / Función | Acción asociada, Parámetros | Ejecuta un `hechizo` previamente declarado, pasando valores a sus parámetros. |
+| conjurar | Sentencia / Bloque | Condición, Repeticiones | Ejecuta un bloque de instrucciones un número determinado de veces (equivalented a un bucle for). |
 | ritual | Sentencia / Bloque condicional | Condición, Bloque verdadero, Bloque fallido | Ejecuta un bloque si la condición es verdadera, o el bloque alternativo si es falsa (equivalente a if-else). |
 | fallido | Sentencia / Bloque condicional | Bloque alternativo | Bloque que se ejecuta cuando la condición de un `ritual` es falsa. |
 | encantar | Sentencia | Valor | Muestra en la salida el valor de una variable o expresión. |
@@ -246,10 +246,10 @@ Para el scanner utilizaré la dependencia **ply.lex**, por lo que utilizaré el 
 | Identificadores          | `[a-z][a-zA-Z0-9_\-#$?]*` |
 | Literales numéricos      | `\d+` |
 | Literales booleanos      | `(Verdadero\|Falso)` |
-| Operadores aritméticos   | `(\+\|\-\|\*\|/\|%)` |
+| Operadores aritméticos   | `(+ \| - \| * \| \ \| %)` |
 | Operadores relacionales  | `(==\|!=\|<=\|>=\|<\|>)` |
 | Operadores lógicos       | `( y \| o \| no)` |
-| Símbolos de agrupación   | `[()\[\]{}]` |
+| Símbolos de agrupación   | `[() \| [] \| {}]` |
 | Delimitador de sentencia | `;` |
 
 ## TP 3: Análisis sintáctico
@@ -278,10 +278,7 @@ Para el scanner utilizaré la dependencia **ply.lex**, por lo que utilizaré el 
 | `{ forjar x = <digito>; <sentencia> }` | `<digito> ::= 8` |
 | `{ forjar x = 8; <sentencia> }` | `<sentencia> ::= <imprimir>;` |
 | `{ forjar x = 8; <imprimir>; }` | `<imprimir> ::= encantar(<valor>)` |
-| `{ forjar x = 8; encantar(<valor>); }` | `<valor> ::= <valor_numerico>` |
-| `{ forjar x = 8; encantar(<valor_numerico>); }` | `<valor> ::= <valor_numerico>` |
-| `{ forjar x = 8; encantar(<valor_numerico>); }` | `<valor_numerico> ::= <numero>` |
-| `{ forjar x = 8; encantar(<numero>); }` | `<numero> ::= <identificador>` |
+| `{ forjar x = 8; encantar(<valor>); }` | `<valor> ::= <identificador>` |
 | `{ forjar x = 8; encantar(<identificador>); }` | `<identificador> ::= <minuscula><caracter>*` |
 | `{ forjar x = 8; encantar(<minuscula><caracter>*); }` | `<minuscula> ::= x` |
 | `{ forjar x = 8; encantar(x<caracter>*); }` | `<caracter>* ::= λ` |
@@ -302,10 +299,7 @@ Para el scanner utilizaré la dependencia **ply.lex**, por lo que utilizaré el 
 | `{ forjar x = 8; encantar(x); }`                           | `<caracter>* ::= λ`                                 |
 | `{ forjar x = 8; encantar(x<caracter>*); }`                | `<minuscula> ::= x`                                 |
 | `{ forjar x = 8; encantar(<minuscula><caracter>*); }`      | `<identificador> ::= <minuscula><caracter>*`        |
-| `{ forjar x = 8; encantar(<identificador>); }`             | `<numero> ::= <identificador>`                      |
-| `{ forjar x = 8; encantar(<numero>); }`                    | `<valor_numerico> ::= <numero>`                     |
-| `{ forjar x = 8; encantar(<valor_numerico>); }`            | `<valor> ::= <valor_numerico>`                      |
-| `{ forjar x = 8; encantar(<valor_numerico>); }`            | `<valor> ::= <valor_numerico>`                      |
+| `{ forjar x = 8; encantar(<identificador>); }`             | `<valor> ::= <identificador>`                      |
 | `{ forjar x = 8; encantar(<valor>); }`                     | `<imprimir> ::= encantar(<valor>)`                  |
 | `{ forjar x = 8; <imprimir>; }`                            | `<sentencia> ::= <imprimir>;`                       |
 | `{ forjar x = 8; <sentencia> }`                            | `<digito> ::= 8`                                    |
@@ -408,15 +402,13 @@ Palabra 'abbaab' rechazada.
 
 ## TP 4: ASD con retroceso
 
-**Autómata de pila para el ejercicio:**
-Este es una versión reducida de la BNF original.
-
 **GIC DE BASE:** se simplificó la BNF para lograr una GIC más accesible para el análisis de la sentencia.
 
 <pre style="font-family: 'Fira Code', monospace; background:#1e1e1e; color:#dcdcdc; padding:12px; border-radius:8px;">
 &lt;programa&gt;        → { &lt;sentencia&gt; }
-&lt;sentencia&gt;       → &lt;asignacion&gt;;
+&lt;sentencia&gt;       → &lt;asignacion&gt;; | &lt;imprimir&gt;;
 &lt;asignacion&gt;      → forjar &lt;identificador&gt; = &lt;valor&gt;
+&lt;imprimir&gt;        → encantar(&lt;valor&gt;)
 &lt;identificador&gt;   → &lt;minuscula&gt; &lt;caracter&gt;
 &lt;minuscula&gt;       → x
 &lt;caracter&gt;        → λ
@@ -424,6 +416,8 @@ Este es una versión reducida de la BNF original.
 &lt;valor_numerico&gt;  → &lt;numero&gt; | &lt;identificador&gt;
 &lt;numero&gt;          → 8
 </pre>
+
+**Autómata de pila para el ejercicio:**
 
 ![Autómata ASD](./Automata-pila-ASD.png)
 
@@ -439,8 +433,9 @@ Este es una versión reducida de la BNF original.
 |---------------------------------------|-----------------------|-----------------------------------------------------------------------|
 | λ                                     | `{ forjar x = 8; encantar(x); }`   | δ(q0, λ, λ) = (q1, #)                                                 |
 | #                                     | `{ forjar x = 8; encantar(x); }`   | δ(q1, λ, λ) = (q2, \<programa>)                                       |
-| #\<programa>                          | `{ forjar x = 8; encantar(x); }`   | δ(q2, λ, \<programa>) = (q2, { \<sentencia> })                        |
-| #\}\<sentencia>\<sentencia>\{         | `{ forjar x = 8; encantar(x); }`   | δ(q2, \{, \{) = (q2, λ)                                               |
+| #\<programa>                          | `{ forjar x = 8; encantar(x); }`   | δ(q2, λ, \<programa>) = (q2, { \<sentencia> })                                    |
+| #\}\<sentencia>\{                     | `{ forjar x = 8; encantar(x); }`   | δ(q2, \{, \{) = (q2, λ)                                                 |
+| #\}\<sentencia>                       | `forjar x = 8; encantar(x); }`     | δ(q2, λ, \<sentencia>) = (q2, \<sentencia>\<sentencia>)                         |
 | #\}\<sentencia>\<sentencia>           | `forjar x = 8; encantar(x); }`     | δ(q2, λ, \<sentencia>) = (q2, \<asignacion>;)                         |
 | #\}\<sentencia>;\<asignacion>         | `forjar x = 8; encantar(x); }`     | δ(q2, λ, \<asignacion>) = (q2, forjar \<identificador> = \<valor>)    |
 | #\}\<sentencia>;\<valor>=\<identificador>forjar | `forjar x = 8; encantar(x); }` | δ(q2, forjar, forjar) = (q2, λ)                                 |
@@ -530,7 +525,7 @@ Este es una versión reducida de la BNF original.
 | PRED(\<sentencia> &rarr; \<asignacion>;) = { forjar } |
 | PRED(\<sentencia> &rarr; \<imprimir>;) = { encantar } |
 | **{ forjar } ∩ { encantar } = { }** |
-| PRED(\<asignacion> &rarr; forjar \<identificador> = \<valor>;) = { forjar } |
+| PRED(\<asignacion> &rarr; forjar \<identificador> = \<valor>) = { forjar } |
 | **{ forjar } ∩ { } = { }** |
 | PRED(\<imprimir> &rarr; encantar(\<valor>)) = { encantar } |
 | **{ encantar } ∩ { } = { }** |
@@ -538,14 +533,14 @@ Este es una versión reducida de la BNF original.
 | **{ x } ∩ { } = { }** |
 | PRED(\<minuscula> &rarr; x) = { x } |
 | **{ x } ∩ { } = { }** |
-| PRED(\<caracter> &rarr; λ) = { = } |
-| **{ = } ∩ { } = { }** |
+| PRED(\<caracter> &rarr; λ) = { =, ), ; } |
+| **{ =, ), ; } ∩ { } = { }** |
 | PRED(\<valor> &rarr; \<valor_numerico>) = { 8, x } |
 | **{ 8, x } ∩ { } = { }** |
 | PRED(\<valor_numerico> &rarr; \<numero>) = { 8 } |
 | PRED(\<valor_numerico> &rarr; \<identificador>) = { x } |
 | **{ 8 } ∩ { x } = { }** |
-| PRED(\<numero> &rarr; 8) = { 8 } ∩ { } = { } |
+| PRED(\<numero> &rarr; 8) = { 8 } |
 | **{ 8 } ∩ { } = { }** |
 
 **Es LL(1)**
@@ -579,6 +574,8 @@ PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } 
 &lt;valor_numerico&gt;  → &lt;numero&gt;
 &lt;numero&gt;          → 8
 </pre>
+
+**Autómata de pila para el ejercicio:**
 
 ![Autómata ASA](./Automata-Pila-ASA.png)
 
