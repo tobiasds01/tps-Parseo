@@ -666,7 +666,7 @@ PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } 
 <br>
 <br>
 
-2. Se procesa la línea 1.
+2. Se procesa la línea 1 y 2.
 
 | Cod | Nombre | Categoría | Tipo | NumPar | ListaPar | Ámbito |
 |:---:|:------:|:---------:|:----:|:------:|:--------:|:------:|
@@ -676,7 +676,7 @@ PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } 
 <br>
 <br>
 
-3. Se procesa la línea 3. El contenido de la tabla no cambia.
+3. Se procesa la línea 3 y 4. El contenido de la tabla no cambia.
 
 | Cod | Nombre | Categoría | Tipo | NumPar | ListaPar | Ámbito |
 |:---:|:------:|:---------:|:----:|:------:|:--------:|:------:|
