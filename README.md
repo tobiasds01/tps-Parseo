@@ -411,7 +411,21 @@ Palabra 'abbaab' rechazada.
 **Autómata de pila para el ejercicio:**
 Este es una versión reducida de la BNF original.
 
-![Autómata de pila](./Automata-pila-ASD.png)
+**GIC DE BASE:** se simplificó la BNF para lograr una GIC más accesible para el análisis de la sentencia.
+
+<pre style="font-family: 'Fira Code', monospace; background:#1e1e1e; color:#dcdcdc; padding:12px; border-radius:8px;">
+&lt;programa&gt;        → { &lt;sentencia&gt; }
+&lt;sentencia&gt;       → &lt;asignacion&gt;;
+&lt;asignacion&gt;      → forjar &lt;identificador&gt; = &lt;valor&gt;
+&lt;identificador&gt;   → &lt;minuscula&gt; &lt;caracter&gt;
+&lt;minuscula&gt;       → x
+&lt;caracter&gt;        → λ
+&lt;valor&gt;           → &lt;valor_numerico&gt;
+&lt;valor_numerico&gt;  → &lt;numero&gt; | &lt;identificador&gt;
+&lt;numero&gt;          → 8
+</pre>
+
+![Autómata ASD](./Automata-pila-ASD.png)
 
 **Cadena a derivar:**
 ```ruby
@@ -548,14 +562,25 @@ SIG(<numero>) = { SIG(<valor_numerico>) = ; }
 
 PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } |
 -->
----
 
-## TP 6: ASA Predictivo LL(1)
 
-**Autómata de pila para el ejercicio:**
-Este es una versión reducida de la BNF original.
+## TP 6: ASA con retroceso
 
-![Autómata de pila](./Automata-pila-ASA.png)
+**GIC DE BASE:** se simplificó la BNF para lograr una GIC más accesible para el análisis de la sentencia.
+
+<pre style="font-family: 'Fira Code', monospace; background:#1e1e1e; color:#dcdcdc; padding:12px; border-radius:8px;">
+&lt;programa&gt;        → { &lt;sentencia&gt; }
+&lt;sentencia&gt;       → &lt;asignacion&gt;;
+&lt;asignacion&gt;      → forjar &lt;identificador&gt; = &lt;valor&gt;
+&lt;identificador&gt;   → &lt;minuscula&gt; &lt;caracter&gt;
+&lt;minuscula&gt;       → x
+&lt;caracter&gt;        → λ
+&lt;valor&gt;           → &lt;valor_numerico&gt;
+&lt;valor_numerico&gt;  → &lt;numero&gt;
+&lt;numero&gt;          → 8
+</pre>
+
+![Autómata ASA](./Automata-Pila-ASA.png)
 
 **Cadena a derivar:**
 ```ruby
@@ -565,42 +590,44 @@ Este es una versión reducida de la BNF original.
   encantar(x);
 }
 ```
-| Pila                                  | Entrada               | Transición                                                            |
-|---------------------------------------|-----------------------|-----------------------------------------------------------------------|
+
+| Pila                                  | Entrada                            | Transición                                                            |
+|---------------------------------------|------------------------------------|-----------------------------------------------------------------------|
 | λ                                     | `{ forjar x = 8; encantar(x); }`   | δ(q0, λ, λ) = (q1, #)                                                 |
-| #                                     | `{ forjar x = 8; encantar(x); }`   | δ(q1, λ, λ) = (q2, \<programa>)                                       |
-| #\<programa>                          | `{ forjar x = 8; encantar(x); }`   | δ(q2, λ, \<programa>) = (q2, { \<sentencia> })                        |
-| #\}\<sentencia>\<sentencia>\{         | `{ forjar x = 8; encantar(x); }`   | δ(q2, \{, \{) = (q2, λ)                                               |
-| #\}\<sentencia>\<sentencia>           | `forjar x = 8; encantar(x); }`     | δ(q2, λ, \<sentencia>) = (q2, \<asignacion>;)                         |
-| #\}\<sentencia>;\<asignacion>         | `forjar x = 8; encantar(x); }`     | δ(q2, λ, \<asignacion>) = (q2, forjar \<identificador> = \<valor>)    |
-| #\}\<sentencia>;\<valor>=\<identificador>forjar | `forjar x = 8; encantar(x); }` | δ(q2, forjar, forjar) = (q2, λ)                                 |
-| #\}\<sentencia>;\<valor>=\<identificador>  | `x = 8; encantar(x); }`       | δ(q2, λ, \<identificador>) = (q2, \<minuscula>\<caracter>)            |
-| #\}\<sentencia>;\<valor>=\<caracter>\<minuscula>  | `x = 8; encantar(x); }`| δ(q2, λ, \<minuscula>) = (q2, x)                                      |
-| #\}\<sentencia>;\<valor>=\<caracter>x | `x = 8; encantar(x); }`            | δ(q2, x, x) = (q2, λ)                                                 |
-| #\}\<sentencia>;\<valor>=\<caracter>  | `= 8; encantar(x); }`              | δ(q2, λ, \<caracter>) = (q2, λ)                                       |
-| #\}\<sentencia>;\<valor>=             | `= 8; encantar(x); }`              | δ(q2, =, =) = (q2, λ)                                                 |
-| #\}\<sentencia>;\<valor>              | `8; encantar(x); }`                | δ(q2, λ, \<valor>) = (q2, \<valor_numerico>)                          |
-| #\}\<sentencia>;\<valor_numerico>     | `8; encantar(x); }`                | δ(q2, λ, \<valor_numerico>) = (q2, \<numero>)                         |
-| #\}\<sentencia>;\<numero>             | `8; encantar(x); }`                | δ(q2, λ, \<numero>) = (q2, 8)                                         |
-| #\}\<sentencia>;8                     | `8; encantar(x); }`                | δ(q2, 8, 8) = (q2, λ)                                                 |
-| #\}\<sentencia>;                      | `; encantar(x); }`                 | δ(q2, ;, ;) = (q2, λ)                                                 |
-| #\}\<sentencia>                       | `encantar(x); }`                   | δ(q2, λ, \<sentencia>) = (q2, \<imprimir>;)   |
-| #\};\<imprimir>                       | `encantar(x); }`                   | δ(q2, λ, \<imprimir>) = (q2, encantar(<valor>))                       |
-| #\};)\<valor>(encantar                | `encantar(x); }`                   | δ(q2, encantar, encantar) = (q2, λ)                                   |
-| #\};)\<valor>(                        | `(x); }`                           | δ(q2, (, ( ) = (q2, λ)                                                |
-| #\};)\<valor>                         | `x); }`                            | δ(q2, λ, \<valor>) = (q2, \<valor_numerico>)                          |
-| #\};)\<valor_numerico>                | `x); }`                            | δ(q2, λ, \<valor_numerico>) = (q2, \<identificador>)                  |
-| #\};)\<identificador>                 | `x); }`                            | δ(q2, λ, \<identificador>) = (q2, \<minuscula>\<caracter>)            |
-| #\};)\<caracter>\<minuscula>          | `x); }`                            | δ(q2, λ, \<minuscula>) = (q2, x)                                      |
-| #\};)\<caracter>x                     | `x); }`                            | δ(q2, x, x) = (q2, λ)                                                 |
-| #\};)\<caracter>                      | `); }`                             | δ(q2, λ, \<caracter>) = (q2, λ)                                       |
-| #\};)                                 | `); }`                             | δ(q2, ), ) ) = (q2, λ)                                                |
-| #\};                                  | `; }`                              | δ(q2, ;, ; ) = (q2, λ)                                                |
-| #\}                                   | `}`                                | δ(q2, }, }) = (q2, λ)                                                 |
+| #                                     | `{ forjar x = 8; encantar(x); }`   | shift                                                                 |
+| #{                                    | `forjar x = 8; encantar(x); }`     | shift                                                                 |
+| #{forjar                              | `x = 8; encantar(x); }`            | shift                                                                 |
+| #{forjarx                             | `= 8; encantar(x); }`              | reduce                                                                |
+| #{forjar\<minuscula>                  | `= 8; encantar(x); }`              | reduce                                                                |
+| #{forjar\<minuscula>\<caracter>       | `= 8; encantar(x); }`              | reduce                                                                |
+| #{forjar\<identificador>              | `= 8; encantar(x); }`              | shift                                                                 |
+| #{forjar\<identificador>=             | `8; encantar(x); }`                | shift                                                                 |
+| #{forjar\<identificador>=8            | `; encantar(x); }`                 | reduce                                                                |
+| #{forjar\<identificador>=\<numero>    | `; encantar(x); }`                 | reduce                                                                |
+| #{forjar\<identificador>=\<valor_numerico> | `; encantar(x); }`            | reduce                                                                |
+| #{forjar\<identificador>=\<valor>     | `; encantar(x); }`                 | reduce                                                                |
+| #{\<asignacion>                       | `; encantar(x); }`                 | shift                                                                 |
+| #{\<asignacion>;                      | `encantar(x); }`                   | reduce                                                                |
+| #{\<sentencia>                        | `encantar(x); }`                   | shift                                                                 |
+| #{\<sentencia>encantar                | `(x); }`                           | shift                                                                 |
+| #{\<sentencia>encantar(               | `x); }`                            | shift                                                                 |
+| #{\<sentencia>encantar(x              | `); }`                             | reduce                                                                |
+| #{\<sentencia>encantar(\<minuscula>   | `); }`                             | reduce                                                                |
+| #{\<sentencia>encantar(\<minuscula>\<caracter> | `); }`                    | reduce                                                                |
+| #{\<sentencia>encantar(\<identificador> | `); }`                           | reduce                                                                |
+| #{\<sentencia>encantar(\<valor_numerico> | `); }`                          | reduce                                                                |
+| #{\<sentencia>encantar(\<valor>       | `); }`                             | shift                                                                 |
+| #{\<sentencia>encantar(\<valor>)      | `; }`                              | reduce                                                                |
+| #{\<sentencia>\<imprimir>             | `; }`                              | shift                                                                 |
+| #{\<sentencia>\<imprimir>;            | `}`                                | reduce                                                                |
+| #{\<sentencia>\<sentencia>            | `}`                                | reduce                                                                |
+| #{\<sentencia>                        | `}`                                | shift                                                                 |
+| #{\<sentencia>}                       | `λ`                                | reduce                                                                |
+| #\<programa>                          | `λ`                                | δ(q1, λ, \<programa>) = (q2, λ)                                       |
 | #                                     | `λ`                                | δ(q2, λ, #) = (q3, λ)                                                 |
 | λ                                     | `λ`                                | accept                                                                |
-
 ---
+
 ## TP 7: Tabla de Tipos y Tabla Semántica
 
 ### Tabla de Tipos
