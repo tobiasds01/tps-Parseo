@@ -639,10 +639,10 @@ PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } 
 
 | Cod | Nombre | TipoBase | Padre | Dimensión | Mínimo | Máximo | Ámbito |
 |:---:|:------:|:--------:|:-----:|:---------:|:------:|:------:|:------:|
-|  0  | valor  |    -1    |  -1   |     1     |   -1   |   -1   |    0   |
-|  1  | numero |    -1    |  -1   |     1     |   -1   |   -1   |    0   |
-|  2  | booleano |  -1    |  -1   |     1     |   -1   |   -1   |    0   |
-|  3  | vacío  |    -1    |  -1   |     1     |   -1   |   -1   |    0   |
+|  0  | numero |    -1    |  -1   |     1     |   -1   |   -1   |    0   |
+|  1  | booleano |  -1    |  -1   |     1     |   -1   |   -1   |    0   |
+|  2  | vacío  |    -1    |  -1   |     1     |   -1   |   -1   |    0   |
+|  3  | valor  |    -1    |  -1   |     1     |   -1   |   -1   |    0   |
 
 <br>
 <br>
@@ -657,10 +657,11 @@ PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } 
 3:   encantar(x);
 4: }
 ```
-1. Tipos básicos del lenguaje
+1. Tabla al inicio. Se agrega *'encantar'* ya que es una función primitiva del lenguaje.
 
 | Cod | Nombre | Categoría | Tipo | NumPar | ListaPar | Ámbito |
 |:---:|:------:|:---------:|:----:|:------:|:--------:|:------:|
+|  0  | encantar | funcion  |  2  |    1   |   [3]    |    0   |
 
 <br>
 <br>
@@ -669,13 +670,15 @@ PRED(<caracter> -> λ) = (PRIM(<caracter>) – {λ}) U SIG(<caracter>) => { = } 
 
 | Cod | Nombre | Categoría | Tipo | NumPar | ListaPar | Ámbito |
 |:---:|:------:|:---------:|:----:|:------:|:--------:|:------:|
-|  0  |   x    | variable  |  1   |   -1   |   null   |    0   |
+|  0  | encantar | funcion  |  2  |    1   |   [3]    |    0   |
+|  1  |   x    | variable  |  0   |   -1   |   null   |    0   |
 
 <br>
 <br>
 
-3. Se procesa la línea 3 y 4. El contenido de la tabla no cambia.
+3. Se procesa la línea 3. El contenido de la tabla no cambia.
 
 | Cod | Nombre | Categoría | Tipo | NumPar | ListaPar | Ámbito |
 |:---:|:------:|:---------:|:----:|:------:|:--------:|:------:|
-|  0  |   x    | variable  |  1   |   -1   |   null   |    0   |
+|  0  | encantar | funcion  |  2  |    1   |   [3]    |    0   |
+|  1  |   x    | variable  |  0   |   -1   |   null   |    0   |
