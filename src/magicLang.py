@@ -1,53 +1,6 @@
 # -----------------------------------------------------------------------------
 # MagicLang
 #
-"""
-<programa> ::= { <lista_sentencias> }
-<lista_sentencias> ::= <sentencia> | <sentencia> <lista_sentencias>
-<sentencia> ::= λ | <asignacion>; | <funcion> | <invocacion>; | <repeticion> | <condicional> | <imprimir>;
-
-<asignacion> ::= forjar <identificador> = <valor>
-
-<identificador> ::= <minuscula> <caracteres>
-<caracteres> ::= λ | <caracter><caracteres>
-<caracter> ::= <minuscula> | <mayuscula> | <numero> | <simbolo>
-
-<funcion> ::= hechizo <identificador>(<vacio_o_parametros>) <bloque>
-
-<vacio_o_parametros> ::= λ | <parametros>
-<parametros> ::= <identificador> | <identificador>, <parametros>
-<bloque> ::= [<lista_sentencias>]
-
-<invocacion> ::= invocar <identificador>(<vacio_o_argumento>) | invocar <bloque>
-<vacio_o_argumento> ::= λ | <argumento>
-<argumento> ::= <valor> | <valor>, <argumento>
-
-<repeticion> ::= conjurar (<valor>) veces <bloque>
-
-<condicional> ::= ritual(<valor>) <bloque> | ritual(<valor>) <bloque> fallido <bloque>
-
-<imprimir> ::= encantar(<valor>)
-
-<valor> ::= <valor_numerico> | <valor_booleano> | <identificador>
-
-<valor_numerico> ::= <numero> | <operacion_numerica>
-<operacion_numerica> ::= <valor_numerico> <operador_numerico> <valor_numerico> | (<valor_numerico>)
-
-<valor_booleano> ::= <booleano> | <operacion_booleana>
-<operacion_booleana> ::= no <valor_booleano> | <valor_booleano> <operador_booleano> <valor_booleano> | <valor_numerico> <comparador_numerico> <valor_numerico> | (<valor_booleano>)
-
-<operador_numerico> ::= + | - | * | / | %
-<comparador_numerico> ::= <comparacion> | < | > | <= | >=
-<operador_booleano> ::= <comparacion> | y | o
-<comparacion> ::= == | !=
-<booleano> ::= Verdadero | Falso
-<numero> ::= <digito> | <digito><numero>
-<digito> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-<minuscula> ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | ñ | o | p | q | r | s | t | u | v | w | x | y | z
-<mayuscula> ::= A | B | C | D | E | F | G | H | I | J | K | L | M | N | Ñ | O | P | Q | R | S | T | U | V | W | X | Y | Z
-<simbolo> ::= _ | - | # | $ | ?
-"""
-#
 # -----------------------------------------------------------------------------
 
 from ply.lex import lex
@@ -153,7 +106,7 @@ precedence = (
     ('nonassoc', 'IGUAL', 'DISTINTO', 'MENOR', 'MAYOR', 'MENOR_IGUAL', 'MAYOR_IGUAL'),
     ('left', 'MAS', 'MENOS'),
     ('left', 'POR', 'DIVIDIDO', 'MODULO'),
-    ('right', 'MENOS_U'), # Para 'menos' unario (ej. -5)
+    ('right', 'MENOS_U'),
 )
 
 entorno_g = Entorno()
@@ -163,7 +116,7 @@ start = 'programa'
 
 def p_programa(p):
     '''programa : IZQ_LLAVE lista_sentencias DER_LLAVE'''
-    # p[0] ahora almacena el AST completo (la lista de sentencias)
+    # p[0] AST completo (la lista de sentencias)
     p[0] = p[2]
 
 def p_lista_sentencias(p):
@@ -183,7 +136,7 @@ def p_sentencia(p):
                  | repeticion
                  | condicional
                  | imprimir PUNTO_Y_COMA
-                 | empty''' # Permitimos sentencias vacías (ej. ';;')
+                 | empty'''
     p[0] = p[1]
 
 def p_asignacion(p):
@@ -280,7 +233,7 @@ def p_expresion_binop(p):
 
 def p_expresion_unop(p):
     '''expresion : NO expresion
-                 | MENOS expresion %prec MENOS_U''' # Menos unario (ej. -10)
+                 | MENOS expresion %prec MENOS_U''' # Menos unario
     p[0] = ('op_unaria', p[1], p[2])
 
 def p_expresion_group(p):
